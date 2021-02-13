@@ -10,6 +10,4 @@ public class Validation {
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
-
-
 }

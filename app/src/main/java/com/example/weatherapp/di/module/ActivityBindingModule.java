@@ -1,6 +1,7 @@
 package com.example.weatherapp.di.module;
 
-import com.example.weatherapp.view.MainActivity;
+import com.example.weatherapp.view.WeatherCitiesActivity;
+import com.example.weatherapp.view.WeatherCityLocationActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -9,6 +10,8 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class ActivityBindingModule {
 
     @ContributesAndroidInjector
-    abstract MainActivity bindMainActivity();
+    abstract WeatherCitiesActivity bindMainActivity();
 
+    @ContributesAndroidInjector
+    abstract WeatherCityLocationActivity bindCityLocationActivity();
 }

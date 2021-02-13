@@ -1,6 +1,7 @@
 package com.example.weatherapp;
 
-import android.app.Application;
+
+import android.util.Log;
 
 import com.example.weatherapp.di.component.ApplicationComponent;
 import com.example.weatherapp.di.component.DaggerApplicationComponent;
@@ -15,7 +16,6 @@ public class BaseApplication extends DaggerApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-
     }
 
     @Override

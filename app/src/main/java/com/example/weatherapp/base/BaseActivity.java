@@ -35,8 +35,5 @@ public abstract class BaseActivity<D extends ViewDataBinding, V extends ViewMode
 
     protected abstract Class<V> getViewModel();
 
-    protected void showProgressBar() {
-        
-    }
 
 }

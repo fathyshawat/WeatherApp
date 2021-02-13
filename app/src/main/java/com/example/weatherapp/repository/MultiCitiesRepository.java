@@ -23,6 +23,7 @@ import static com.example.weatherapp.repository.Urls.API_TOKEN;
 import static com.example.weatherapp.repository.Urls.APPID;
 import static com.example.weatherapp.repository.Urls.BASE_URL;
 import static com.example.weatherapp.repository.Urls.ID;
+import static com.example.weatherapp.utils.Constants.CONVERT_TO_CELSIUS;
 
 public class MultiCitiesRepository {
 
@@ -48,8 +49,8 @@ public class MultiCitiesRepository {
 
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject weather = jsonArray.getJSONObject(i);
-                                double minTemp = weather.getJSONObject("main").getDouble("temp_min") - 273.15;
-                                double maxTemp = weather.getJSONObject("main").getDouble("temp_max") - 273.15;
+                                double minTemp = weather.getJSONObject("main").getDouble("temp_min") - CONVERT_TO_CELSIUS;
+                                double maxTemp = weather.getJSONObject("main").getDouble("temp_max") - CONVERT_TO_CELSIUS;
                                 double windSpeed = weather.getJSONObject("wind").getDouble("speed");
                                 String name = weather.getString("name");
                                 StringBuilder description = new StringBuilder();

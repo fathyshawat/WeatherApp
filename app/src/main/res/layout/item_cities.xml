@@ -54,11 +54,24 @@
                     android:textSize="@dimen/size_20sp" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/wind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ln_temp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="@dimen/margin_10dp"
+                android:layout_marginLeft="@dimen/margin_10dp"
+                android:layout_marginTop="@dimen/margin_30dp"
+                android:text="@{String.valueOf(data.windSpeed)+` km/h`}"
+                android:textColor="@color/blue"
+                android:textSize="@dimen/size_20sp" />
+
             <ImageView
                 android:id="@+id/image"
                 android:layout_width="@dimen/img_width"
                 android:layout_height="@dimen/img_height"
-                android:layout_below="@id/ln_temp"
+                android:layout_below="@id/wind"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/margin_30dp"
                 android:scaleType="fitXY"

@@ -1,7 +1,10 @@
 package com.example.weatherapp.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 
 import com.google.gson.Gson;
@@ -13,7 +16,12 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
@@ -98,5 +106,62 @@ public class Utils {
         return myCities.length;
     }
 
+
+    public static String getCurrentDate() {
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1;
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        String m;
+        if (String.valueOf(month).length() == 1)
+            m = "0" + month;
+        else
+            m = String.valueOf(month);
+
+        String date = year + "-" + m + "-" + day;
+        return date;
+    }
+
+    public static String increaseDate(String dt, int value) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        try {
+            c.setTime(sdf.parse(dt));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        c.add(Calendar.DATE, value);
+        dt = sdf.format(c.getTime());
+
+        return dt;
+    }
+
+    public static Date date(String dtStart) {
+
+        Date date = null;
+        DateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            date = (Date) formatter2.parse(dtStart);
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+        }
+        return date;
+    }
+
+    public static String getDayOfWeek(String date){
+        return (String) android.text.format.DateFormat.format("EEEE",Utils.date(date));
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
 }

@@ -1,134 +1,203 @@
 package com.example.weatherapp.view;
 
-
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import androidx.lifecycle.Observer;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.databinding.DataBindingUtil;
 
 import com.example.weatherapp.R;
-import com.example.weatherapp.base.BaseActivity;
-import com.example.weatherapp.databinding.ActivityMainBinding;
-import com.example.weatherapp.model.CitiesWeather;
+import com.example.weatherapp.databinding.MainScreenBinding;
 import com.example.weatherapp.utils.DialogUtil;
-import com.example.weatherapp.utils.Resource;
-import com.example.weatherapp.utils.Utils;
 import com.example.weatherapp.utils.Validation;
-import com.example.weatherapp.view.adapter.CitiesAdapter;
-import com.example.weatherapp.viewmodel.MultiCitiesViewModel;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import static com.example.weatherapp.utils.Constants.FINE_LOCATION;
+import static com.example.weatherapp.utils.Constants.GPS_ENABLING;
+import static com.example.weatherapp.utils.Constants.LAT;
+import static com.example.weatherapp.utils.Constants.LNG;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+public class MainActivity extends AppCompatActivity {
 
-
-public class MainActivity extends BaseActivity<ActivityMainBinding, MultiCitiesViewModel> {
+    private MainScreenBinding dataBinding;
 
 
-    private HashMap<String, Integer> citiesHashMap = new HashMap<>();
-    private String cities;
-    private List<CitiesWeather> citiesLs = new ArrayList<>();
-    private CitiesAdapter adapter;
-    private CompositeDisposable disposable = new CompositeDisposable();
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location mLastKnownLocation;
+    private LocationCallback locationCallback;
+    private LocationManager locationManager;
+
+    private String lat, lng;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dataBinding = DataBindingUtil.setContentView(this, R.layout.main_screen);
 
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        DialogUtil.showProgressDialog(this);
-        Utils.saveCountries(this)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new io.reactivex.Observer<HashMap<String, Integer>>() {
-                    @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-                        disposable.add(d);
-                    }
+        dataBinding.cities.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, WeatherCitiesActivity.class);
+            startActivity(intent);
+        });
+        dataBinding.location.setOnClickListener(v -> {
+            if (!Validation.isNetworkAvailable(MainActivity.this)) {
+                Toast.makeText(this, R.string.check_internet_connection, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            locationPermission();
 
-                    @Override
-                    public void onNext(@NonNull HashMap<String, Integer> hashMap) {
-                        citiesHashMap = hashMap;
-                        DialogUtil.hideProgressDialog();
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        DialogUtil.hideProgressDialog();
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
-
-
-        adapter = new CitiesAdapter(citiesLs);
-        dataBinding.citiesRecyclerView.setAdapter(adapter);
-        dataBinding.citiesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        dataBinding.submit.setOnClickListener(v -> {
-            getCities();
         });
 
-
-    }
-
-    @Override
-    protected int layoutRes() {
-        return R.layout.activity_main;
-    }
-
-    @Override
-    protected Class<MultiCitiesViewModel> getViewModel() {
-        return MultiCitiesViewModel.class;
     }
 
 
-    private void getCities() {
-        cities = Utils.getIdsOfCities(dataBinding.citiesEd.getText().toString().toLowerCase().trim(), citiesHashMap);
-        if (!Validation.isNetworkAvailable(this)) {
-            Toast.makeText(this, R.string.check_internet_connection, Toast.LENGTH_SHORT).show();
-            return;
-        } else if (Utils.getIdsOfCities(cities) < 3) {
-            Toast.makeText(this, R.string.min_of_cities, Toast.LENGTH_SHORT).show();
-            return;
-        } else if (Utils.getIdsOfCities(cities) > 7) {
-            Toast.makeText(this, R.string.max_of_cities, Toast.LENGTH_SHORT).show();
-            return;
+    private void locationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION}, FINE_LOCATION);
+        } else {
+            enableGps();
         }
-        dataBinding.progressBar.setVisibility(View.VISIBLE);
-        viewModel.getCities(cities);
-        viewModel.getCitiesWeatherLiveData().
-                observe(this, new Observer<Resource<List<CitiesWeather>>>() {
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getDeviceLocation() {
+        mFusedLocationProviderClient.getLastLocation()
+                .addOnCompleteListener(new OnCompleteListener<Location>() {
                     @Override
-                    public void onChanged(Resource<List<CitiesWeather>> listResource) {
-                        dataBinding.progressBar.setVisibility(View.GONE);
-                        if (listResource.status == Resource.Status.SUCCESS) {
-                            adapter.updateAll(listResource.data);
+                    public void onComplete(@androidx.annotation.NonNull Task<Location> task) {
+                        if (task.isSuccessful()) {
+
+                            mLastKnownLocation = task.getResult();
+
+                            if (mLastKnownLocation != null) {
+                                lat = String.valueOf(mLastKnownLocation.getLatitude());
+                                lng = String.valueOf(mLastKnownLocation.getLongitude());
+                                moveToCityLocationActivity(lat, lng);
+
+                            } else {
+                                final LocationRequest locationRequest = LocationRequest.create();
+                                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                                locationCallback = new LocationCallback() {
+                                    @Override
+                                    public void onLocationResult(LocationResult locationResult) {
+                                        super.onLocationResult(locationResult);
+                                        if (locationResult == null) {
+                                            return;
+                                        }
+
+
+                                        mLastKnownLocation = locationResult.getLastLocation();
+                                        lat = String.valueOf(mLastKnownLocation.getLatitude());
+                                        lng = String.valueOf(mLastKnownLocation.getLongitude());
+
+                                        moveToCityLocationActivity(lat, lng);
+
+                                    }
+                                };
+                                mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+
+                            }
                         } else {
-                            Toast.makeText(MainActivity.this, R.string.somthing_wrong, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
 
+
+    }
+
+
+    private void moveToCityLocationActivity(String lat, String lng) {
+        DialogUtil.hideProgressDialog();
+        Intent intent = new Intent(this, WeatherCityLocationActivity.class);
+        intent.putExtra(LAT, lat);
+        intent.putExtra(LNG, lng);
+        startActivity(intent);
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GPS_ENABLING) {
+            if (resultCode == RESULT_OK) {
+                DialogUtil.showProgressDialog(MainActivity.this);
+                getDeviceLocation();
+            }
+        }
+    }
+
+
+    public void enableGps() {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        SettingsClient settingsClient = LocationServices.getSettingsClient(MainActivity.this);
+        Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
+        task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                getDeviceLocation();
+            }
+        });
+
+        task.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@androidx.annotation.NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    ResolvableApiException resolve = (ResolvableApiException) e;
+                    try {
+                        resolve.startResolutionForResult(MainActivity.this, GPS_ENABLING);
+                    } catch (IntentSender.SendIntentException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        disposable.clear();
+    public void onRequestPermissionsResult(int requestCode, @androidx.annotation.NonNull String[] permissions, @androidx.annotation.NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == FINE_LOCATION) {
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                getDeviceLocation();
+            } else {
+                enableGps();
+            }
+        } else {
+            finish();
+        }
     }
+
 }
