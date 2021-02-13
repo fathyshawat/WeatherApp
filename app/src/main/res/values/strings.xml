@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">WeatherApp</string>
+    <string name="submit">Submit</string>
+    <string name="somthing_wrong">Something Went Wrong Please Try Again</string>
+    <string name="check_internet_connection">Please , Check Internet Connection</string>
+    <string name="min_of_cities">You must enter at least 3 cities</string>
+    <string name="max_of_cities">You should not enter more than 7 cities</string>
+    <string name="txt_hint">city1,city2</string>
+</resources>
