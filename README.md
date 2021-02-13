@@ -1,5 +1,7 @@
 # WeatherApp
 
+<img src="https://github.com/fathyshawat/WeatherApp/raw/main/app/src/main/assets/Screenrecorder.gif?raw=true" width="300">
+
 # Description App
 Displays temperatures of cities that were written in EditText. Or By using your location to get your city's temperature.
 
@@ -14,3 +16,4 @@ By loading a file JSON "city.list.json" local in android studio and get the id o
 - RxJava : to do a heavy tasks in app in background like(get name-id of all cities).
 - DataBinding :  minimizes the necessary code in your application logic to connect to the user interface elements.avoid null pointer exception.
 - Picasso : easy to deal with img url by(download the image in another thread and it manages for you) and display it in ui .
+- FusedLocationProviderClient : for interacting with the location .
