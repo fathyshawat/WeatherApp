@@ -26,7 +26,7 @@ import static com.example.weatherapp.utils.Constants.LNG;
 
 public class WeatherCityLocationActivity extends BaseActivity<WeatherCityLocationBinding, CityLocationViewModel> {
 
-    private String lat, lng;
+    private String lat, lng, token;
     private CityLocationAdapter adapter;
     private List<CityWeatherInfo> items = new ArrayList<>();
 
@@ -36,7 +36,7 @@ public class WeatherCityLocationActivity extends BaseActivity<WeatherCityLocatio
         lat = getIntent().getStringExtra(LAT);
         lng = getIntent().getStringExtra(LNG);
 
-        adapter = new CityLocationAdapter(this,items);
+        adapter = new CityLocationAdapter(this, items);
         dataBinding.recycler.setAdapter(adapter);
         dataBinding.recycler.setLayoutManager(new LinearLayoutManager(this));
         getCityData();
@@ -58,7 +58,8 @@ public class WeatherCityLocationActivity extends BaseActivity<WeatherCityLocatio
             return;
         }
         dataBinding.progress.setVisibility(View.VISIBLE);
-        viewModel.getCityWeather(lat, lng);
+        token = getString(R.string.api_token);
+        viewModel.getCityWeather(lat, lng, token);
         viewModel.getCityLocationLiveData().observe(this, new Observer<Resource<CitiesLocationWeather>>() {
             @Override
             public void onChanged(Resource<CitiesLocationWeather> citiesLocationWeatherResource) {

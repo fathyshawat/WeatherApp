@@ -24,8 +24,8 @@ public class MultiCitiesViewModel extends ViewModel {
         this.multiCitiesRepository = multiCitiesRepository;
     }
 
-    public void getCities(String cities) {
-        citiesWeatherLiveData = multiCitiesRepository.getMultiCities(cities);
+    public void getCities(String cities,String token) {
+        citiesWeatherLiveData = multiCitiesRepository.getMultiCities(cities,token);
     }
 
     public MutableLiveData<Resource<List<CitiesWeather>>> getCitiesWeatherLiveData() {

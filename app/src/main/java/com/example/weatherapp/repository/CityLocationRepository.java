@@ -21,7 +21,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import static com.example.weatherapp.repository.Urls.API_TOKEN;
 import static com.example.weatherapp.repository.Urls.APPID;
 import static com.example.weatherapp.repository.Urls.BASE_URL;
 import static com.example.weatherapp.repository.Urls.LAT;
@@ -39,8 +38,8 @@ public class CityLocationRepository {
         this.requestQueue = requestQueue;
     }
 
-    public MutableLiveData<Resource<CitiesLocationWeather>> getCityLocationWeather(String lat, String lng) {
-        String url = BASE_URL + "forecast?" + APPID + API_TOKEN + "&" + LAT + lat + "&" + LNG + lng;
+    public MutableLiveData<Resource<CitiesLocationWeather>> getCityLocationWeather(String lat, String lng,String token) {
+        String url = BASE_URL + "forecast?" + APPID + token + "&" + LAT + lat + "&" + LNG + lng;
         JsonObjectRequest
                 request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {

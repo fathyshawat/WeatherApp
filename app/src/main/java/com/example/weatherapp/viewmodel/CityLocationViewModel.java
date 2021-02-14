@@ -20,8 +20,8 @@ public class CityLocationViewModel extends ViewModel {
         this.cityLocationRepository = multiCitiesRepository;
     }
 
-    public void getCityWeather(String lat, String lng) {
-        cityLocationLiveData = cityLocationRepository.getCityLocationWeather(lat, lng);
+    public void getCityWeather(String lat, String lng, String token) {
+        cityLocationLiveData = cityLocationRepository.getCityLocationWeather(lat, lng, token);
     }
 
 

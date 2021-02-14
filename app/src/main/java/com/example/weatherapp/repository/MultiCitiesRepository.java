@@ -19,7 +19,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import static com.example.weatherapp.repository.Urls.API_TOKEN;
 import static com.example.weatherapp.repository.Urls.APPID;
 import static com.example.weatherapp.repository.Urls.BASE_URL;
 import static com.example.weatherapp.repository.Urls.ID;
@@ -36,8 +35,8 @@ public class MultiCitiesRepository {
         this.requestQueue = requestQueue;
     }
 
-    public MutableLiveData<Resource<List<CitiesWeather>>> getMultiCities(String cities) {
-        String url = BASE_URL + "group?" + APPID + API_TOKEN + "&" + ID + cities;
+    public MutableLiveData<Resource<List<CitiesWeather>>> getMultiCities(String cities, String token) {
+        String url = BASE_URL + "group?" + APPID + token + "&" + ID + cities;
         JsonObjectRequest
                 request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {

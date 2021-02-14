@@ -36,7 +36,7 @@ public class WeatherCitiesActivity extends BaseActivity<SelectionCitiesBinding, 
 
 
     private HashMap<String, Integer> citiesHashMap = new HashMap<>();
-    private String cities;
+    private String cities, token;
     private List<CitiesWeather> citiesLs = new ArrayList<>();
     private CitiesAdapter adapter;
     private CompositeDisposable disposable = new CompositeDisposable();
@@ -111,7 +111,8 @@ public class WeatherCitiesActivity extends BaseActivity<SelectionCitiesBinding, 
             return;
         }
         dataBinding.progressBar.setVisibility(View.VISIBLE);
-        viewModel.getCities(cities);
+        token = getString(R.string.api_token);
+        viewModel.getCities(cities, token);
         viewModel.getCitiesWeatherLiveData().
                 observe(this, new Observer<Resource<List<CitiesWeather>>>() {
                     @Override
