@@ -103,6 +103,9 @@ public class WeatherCitiesActivity extends BaseActivity<SelectionCitiesBinding, 
         if (!Validation.isNetworkAvailable(this)) {
             Toast.makeText(this, R.string.check_internet_connection, Toast.LENGTH_SHORT).show();
             return;
+        } else if (dataBinding.citiesEd.getText().toString().isEmpty()) {
+            dataBinding.citiesEd.setError(getString(R.string.write_cities));
+            return;
         } else if (Utils.getIdsOfCities(cities) < 3) {
             Toast.makeText(this, R.string.min_of_cities, Toast.LENGTH_SHORT).show();
             return;

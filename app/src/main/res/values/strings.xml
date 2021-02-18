@@ -11,4 +11,5 @@
     <string name="weather_in">Weather in</string>
     <string name="get_cities_weather">Get Cities Weather</string>
     <string name="get_your_city_weather">Get Your City Weather</string>
+    <string name="write_cities">Please Write Cities</string>
 </resources>

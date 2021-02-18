@@ -57,6 +57,8 @@ public class WeatherCityLocationActivity extends BaseActivity<WeatherCityLocatio
             Toast.makeText(this, R.string.check_internet_connection, Toast.LENGTH_SHORT).show();
             return;
         }
+
+
         dataBinding.progress.setVisibility(View.VISIBLE);
         token = getString(R.string.api_token);
         viewModel.getCityWeather(lat, lng, token);
